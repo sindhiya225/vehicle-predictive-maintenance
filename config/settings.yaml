@@ -1,0 +1,92 @@
+# Predictive Maintenance System Configuration
+
+project:
+  name: "Vehicle Predictive Maintenance"
+  version: "1.0.0"
+  author: "MotorQ Analytics Team"
+
+data:
+  raw_data_path: "data/raw/vehicle_sensor_data.csv"
+  processed_data_path: "data/processed/"
+  test_size: 0.2
+  random_state: 42
+
+features:
+  target_column: "failure_in_next_7d"
+  categorical_features:
+    - "vehicle_id"
+    - "battery_health"
+  numerical_features:
+    - "engine_temperature"
+    - "oil_pressure"
+    - "rpm"
+    - "fuel_consumption"
+    - "battery_voltage"
+    - "distance_km"
+    - "idle_time_minutes"
+    - "max_speed_kmh"
+    - "vehicle_age_days"
+    - "total_distance"
+
+model:
+  algorithms:
+    - "random_forest"
+    - "xgboost"
+    - "gradient_boosting"
+  hyperparameters:
+    random_forest:
+      n_estimators: [100, 200, 300]
+      max_depth: [10, 20, None]
+      min_samples_split: [2, 5, 10]
+      min_samples_leaf: [1, 2, 4]
+    xgboost:
+      n_estimators: [100, 200]
+      max_depth: [3, 6, 9]
+      learning_rate: [0.01, 0.1, 0.3]
+      subsample: [0.8, 1.0]
+  cross_validation:
+    n_splits: 5
+    scoring: "roc_auc"
+
+thresholds:
+  maintenance:
+    critical: 0.8
+    high: 0.6
+    medium: 0.4
+    low: 0.0
+  sensor_anomalies:
+    engine_temperature_high: 110
+    engine_temperature_low: 80
+    oil_pressure_high: 55
+    oil_pressure_low: 25
+    battery_voltage_low: 11.5
+
+business:
+  costs:
+    unplanned_downtime: 5000
+    planned_maintenance: 1000
+    savings_per_early_detection: 4000
+  metrics:
+    target_downtime_reduction: 0.3
+    target_cost_savings: 0.25
+    minimum_detection_rate: 0.85
+
+deployment:
+  api:
+    host: "0.0.0.0"
+    port: 8000
+    workers: 4
+  monitoring:
+    retrain_frequency: "monthly"
+    performance_check_frequency: "weekly"
+    alert_threshold: 0.85
+
+powerbi:
+  dashboard_refresh_frequency: "daily"
+  data_retention_days: 365
+  export_format: "csv"
+
+logging:
+  level: "INFO"
+  file: "logs/predictive_maintenance.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
